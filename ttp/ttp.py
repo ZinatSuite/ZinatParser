@@ -10,13 +10,11 @@
 #  You should have received a copy of the MIT License along with
 #  twitter-text-python. If not, see <http://opensource.org/licenses/MIT>.
 #
-#  Maintained by Edmond Burnett:
+#  Forked from github project of by Edmond Burnett:
 #  https://github.com/edburnett/twitter-text-python
 #  (previously Ian Ozsvald and Ivo Wetzel)
+#  Currently Mainteined by Yabir Garcia for Zinat
 
-
-# Tweet Parser and Formatter ---------------------------------------------------
-# ------------------------------------------------------------------------------
 from __future__ import unicode_literals
 
 import re
@@ -43,9 +41,13 @@ if sys.version_info >= (3, 0):
     username_flags = re.ASCII | re.IGNORECASE
 else:
     username_flags = re.IGNORECASE
+
 USERNAME_REGEX = re.compile(r'\B' + AT_SIGNS + LIST_END_CHARS, username_flags)
 REPLY_REGEX = re.compile(r'^(?:' + SPACES + r')*' + AT_SIGNS
                          + r'([a-z0-9_]{1,20}).*', re.IGNORECASE)
+MASTODON = r'@(([a-z0-9_]+)(?:@[a-z0-9\.\-]+[a-z0-9]+)?)'
+
+MASTODON_USER = re.compile(r'\B' + MASTODON)
 
 # Hashtags
 HASHTAG_EXP = r'(^|[^0-9A-Z&/]+)(#|\uff03)([0-9A-Z_]*[A-Z_]+[%s]*)' % UTF_CHARS
@@ -118,7 +120,8 @@ class Parser(object):
 
     '''A Tweet Parser'''
 
-    def __init__(self, max_url_length=30, include_spans=False):
+    def __init__(self, domain="http://localhost:8000", max_url_length=30, include_spans=False):
+        self._domain = domain
         self._max_url_length = max_url_length
         self._include_spans = include_spans
 
@@ -139,7 +142,7 @@ class Parser(object):
     def _text(self, text):
         '''Parse a Tweet without generating HTML.'''
         URL_REGEX.sub(self._parse_urls, text)
-        USERNAME_REGEX.sub(self._parse_users, text)
+        MASTODON_USER.sub(self._parse_users, text)
         LIST_REGEX.sub(self._parse_lists, text)
         HASHTAG_REGEX.sub(self._parse_tags, text)
         return None
@@ -147,7 +150,7 @@ class Parser(object):
     def _html(self, text):
         '''Parse a Tweet and generate HTML.'''
         html = URL_REGEX.sub(self._parse_urls, text)
-        html = USERNAME_REGEX.sub(self._parse_users, html)
+        html = MASTODON_USER.sub(self._parse_users, html)
         html = LIST_REGEX.sub(self._parse_lists, html)
         return HASHTAG_REGEX.sub(self._parse_tags, html)
 
@@ -198,14 +201,14 @@ class Parser(object):
         '''Parse usernames.'''
 
         # Don't parse lists here
-        if match.group(2) is not None:
-            return match.group(0)
-
-        mat = match.group(0)
+        #print(match.group(1))
+        #print(match.group(2))
+        mat = match.group(1)
+        #print(mat)
         if self._include_spans:
             self._users.append((mat[1:], match.span(0)))
         else:
-            self._users.append(mat[1:])
+            self._users.append(mat[0:])
 
         if self._html:
             return self.format_username(mat[0:1], mat[1:])
@@ -270,18 +273,16 @@ class Parser(object):
     # User defined formatters --------------------------------------------------
     def format_tag(self, tag, text):
         '''Return formatted HTML for a hashtag.'''
-        return '<a href="https://twitter.com/search?q=%s">%s%s</a>' \
-            % (quote(('#' + text).encode('utf-8')), tag, text)
+        return '<a href="{}/search?q={}">{}{}</a>'.format(self._domain, quote(('#' + text).encode('utf-8')), tag, text)
 
     def format_username(self, at_char, user):
         '''Return formatted HTML for a username.'''
-        return '<a href="https://twitter.com/%s">%s%s</a>' \
-               % (user, at_char, user)
+        return '<a href="{}/{}">{}{}</a>'.format(self._domain,user, at_char, user)
 
     def format_list(self, at_char, user, list_name):
         '''Return formatted HTML for a list.'''
-        return '<a href="https://twitter.com/%s/%s">%s%s/%s</a>' \
-               % (user, list_name, at_char, user, list_name)
+        return '<a href="%s/%s/%s">%s%s/%s</a>' \
+               % (self._domain,user, list_name, at_char, user, list_name)
 
     def format_url(self, url, text):
         '''Return formatted HTML for a url.'''
