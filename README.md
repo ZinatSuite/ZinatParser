@@ -1,22 +1,16 @@
-twitter-text-python
+ZinatParser
 ===================
 
-**twitter-text-python** is a Tweet parser and formatter for Python. Extract
+**ZinatParser** is a python utility to work with AP messages at Zinat. Extract
 users, hashtags, URLs and format as HTML for display.
 
 PyPI release: [https://pypi.python.org/pypi/twitter-text-python/](http://pypi.python.org/pypi/twitter-text-python/)
 
 
-installation
-------------
-
-    $ pip install twitter-text-python
-
-
 compatibility
 -------------
 
-twitter-text-python supports Python 2.6, 2.7, 3.3, 3.4 and 3.5.
+I'm manteining python >=3.5.
 
 
 usage
@@ -35,7 +29,7 @@ usage
 >>> result.urls
 ['https://github.com/burnettedmond/']
 >>> result.html
-u'<a href="http://twitter.com/burnettedmond">@burnettedmond</a>, you now support <a href="https://twitter.com/search?q=%23IvoWertzel">#IvoWertzel</a>\'s tweet parser! <a href="https://github.com/edburnett/">https://github.com/edburnett/</a>'
+u'<a href="http://twitter.com/burnettedmond">@burnettedmond</a>, you now support <a href="http://localhost:8000/search?q=%23IvoWertzel">#IvoWertzel</a>\'s tweet parser! <a href="https://github.com/edburnett/">https://github.com/edburnett/</a>'
 ```
 
 If you need different HTML output just subclass and override the `format_*` methods.
@@ -80,20 +74,6 @@ Run the unit tests:
     ----------------------------------------------------------------------
     Ran 100 tests in 0.009s
     OK
-
-Or test on multiple Python versions with tox:
-
-    $ pip install tox
-    $ tox
-
-
-contributing
-------------
-
-See the relevant [wiki
-page](https://github.com/edburnett/twitter-text-python/wiki/Contributing) for
-notes on contributing to **twitter-text-python**.
-
 
 history
 -------
