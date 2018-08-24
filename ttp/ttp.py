@@ -143,7 +143,7 @@ class Parser(object):
         '''Parse a Tweet without generating HTML.'''
         URL_REGEX.sub(self._parse_urls, text)
         MASTODON_USER.sub(self._parse_users, text)
-        LIST_REGEX.sub(self._parse_lists, text)
+        #LIST_REGEX.sub(self._parse_lists, text)
         HASHTAG_REGEX.sub(self._parse_tags, text)
         return None
 
@@ -151,7 +151,7 @@ class Parser(object):
         '''Parse a Tweet and generate HTML.'''
         html = URL_REGEX.sub(self._parse_urls, text)
         html = MASTODON_USER.sub(self._parse_users, html)
-        html = LIST_REGEX.sub(self._parse_lists, html)
+        #html = LIST_REGEX.sub(self._parse_lists, html)
         return HASHTAG_REGEX.sub(self._parse_tags, html)
 
     # Internal parser stuff ----------------------------------------------------
@@ -206,12 +206,12 @@ class Parser(object):
         mat = match.group(1)
         #print(mat)
         if self._include_spans:
-            self._users.append((mat[1:], match.span(0)))
+            self._users.append((mat[0:], match.span(0)))
         else:
             self._users.append(mat[0:])
 
         if self._html:
-            return self.format_username(mat[0:1], mat[1:])
+            return self.format_username("@", mat[0:])
 
     def _parse_lists(self, match):
         '''Parse lists.'''
@@ -281,12 +281,11 @@ class Parser(object):
 
     def format_list(self, at_char, user, list_name):
         '''Return formatted HTML for a list.'''
-        return '<a href="%s/%s/%s">%s%s/%s</a>' \
-               % (self._domain,user, list_name, at_char, user, list_name)
+        return f'<a href="{self._domain,user}/{user}/{list_name}">{at_char}{user}/{list_name}</a>'
 
     def format_url(self, url, text):
         '''Return formatted HTML for a url.'''
-        return '<a href="%s">%s</a>' % (escape(url), text)
+        return f'<a href="{escape(url)}">{text}</a>'
 
 
 # Simple URL escaper
