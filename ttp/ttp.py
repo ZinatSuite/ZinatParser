@@ -13,7 +13,7 @@
 #  Forked from github project of by Edmond Burnett:
 #  https://github.com/edburnett/twitter-text-python
 #  (previously Ian Ozsvald and Ivo Wetzel)
-#  Currently Mainteined by Yabir Garcia for Zinat
+#  Currently Mainteined by Yabir Garcia for Anfora
 
 from __future__ import unicode_literals
 
@@ -47,7 +47,7 @@ REPLY_REGEX = re.compile(r'^(?:' + SPACES + r')*' + AT_SIGNS
                          + r'([a-z0-9_]{1,20}).*', re.IGNORECASE)
 MASTODON = r'@(([a-z0-9_]+)(?:@[a-z0-9\.\-]+[a-z0-9]+)?)'
 
-MASTODON_USER = re.compile(r'\B' + MASTODON)
+MASTODON_USER = re.compile(r'\B' + MASTODON, username_flags)
 
 # Hashtags
 HASHTAG_EXP = r'(^|[^0-9A-Z&/]+)(#|\uff03)([0-9A-Z_]*[A-Z_]+[%s]*)' % UTF_CHARS
@@ -200,18 +200,26 @@ class Parser(object):
     def _parse_users(self, match):
         '''Parse usernames.'''
 
-        # Don't parse lists here
-        #print(match.group(1))
-        #print(match.group(2))
         mat = match.group(1)
-        #print(mat)
+
+        external = False
+        domain = None
+
+        # Check if we need to change domain 
+        group = match.groups()
+        if group[0] != group[1]:
+            external = True
+            domain = group[0].split('@')[1]
+
         if self._include_spans:
             self._users.append((mat[0:], match.span(0)))
         else:
             self._users.append(mat[0:])
 
-        if self._html:
-            return self.format_username("@", mat[0:])
+        if self._html and external:
+            return self.format_username("@", domain, group[1])  
+        elif self._html:
+            return self.format_username("@", self._domain, mat[0:])
 
     def _parse_lists(self, match):
         '''Parse lists.'''
@@ -275,13 +283,13 @@ class Parser(object):
         '''Return formatted HTML for a hashtag.'''
         return '<a href="{}/search?q={}">{}{}</a>'.format(self._domain, quote(('#' + text).encode('utf-8')), tag, text)
 
-    def format_username(self, at_char, user):
+    def format_username(self, at_char,domain,user):
         '''Return formatted HTML for a username.'''
-        return '<a href="{}/{}">{}{}</a>'.format(self._domain,user, at_char, user)
+        return '<a href="{}/{}">{}{}</a>'.format(domain,user, at_char, user)
 
     def format_list(self, at_char, user, list_name):
         '''Return formatted HTML for a list.'''
-        return f'<a href="{self._domain,user}/{user}/{list_name}">{at_char}{user}/{list_name}</a>'
+        return f'<a href="{self._domain}/{user}/{list_name}">{at_char}{user}/{list_name}</a>'
 
     def format_url(self, url, text):
         '''Return formatted HTML for a url.'''

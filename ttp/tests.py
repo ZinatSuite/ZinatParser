@@ -75,9 +75,9 @@ class TWPTests(unittest.TestCase):
         self.assertEqual(result.urls, ['http://example.com/test/bla.net_foo_123.jpg'])
 
     def test_url_amp_lang_equals(self):
-        result = self.parser.parse('Check out http://localhost:8000/search?q=avro&lang=en')
-        self.assertEqual(result.html, 'Check out <a href="http://localhost:8000/search?q=avro&amp;lang=en">http://localhost:8000/search?...</a>')
-        self.assertEqual(result.urls, ['http://localhost:8000/search?q=avro&lang=en'])
+        result = self.parser.parse('Check out http://localhost.com/search?q=avro&lang=en')
+        self.assertEqual(result.html, 'Check out <a href="http://localhost.com/search?q=avro&amp;lang=en">http://localhost.com/search...</a>')
+        self.assertEqual(result.urls, ['http://localhost.com/search?q=avro&lang=en'])
 
     def test_url_amp_break(self):
         result = self.parser.parse('Check out http://twitter.com/te?foo&invalid=True')
@@ -500,12 +500,7 @@ class TWPTests(unittest.TestCase):
         result = self.parser.parse('@username text')
         self.assertEqual(result.html, '<a href="http://localhost:8000/username">@username</a> text')
         self.assertEqual(result.users, ['username'])
-
-    def test_username_full_at_sign(self):
-        result = self.parser.parse('＠username')
-        self.assertEqual(result.html, '<a href="http://localhost:8000/username">＠username</a>')
-        self.assertEqual(result.users, ['username'])
-
+        
     def test_username_trailing(self):
         result = self.parser.parse('text @username')
         self.assertEqual(result.html, 'text <a href="http://localhost:8000/username">@username</a>')
@@ -538,7 +533,7 @@ class TWPTests(unittest.TestCase):
 
     def test_username_AP(self):
         result = self.parser.parse('testing @username@mstdn.io')
-        self.assertEqual(result.html, 'testing <a href="https://mstdn.io/username">@username@mstdn.io</a>')
+        self.assertEqual(result.html, 'testing <a href="mstdn.io/username">@username</a>')
         self.assertEqual(result.users, ['username@mstdn.io'])
         self.assertEqual(result.reply, None)
    
