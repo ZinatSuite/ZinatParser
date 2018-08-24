@@ -20,7 +20,7 @@
 # ------------------------------------------------------------------------------
 from __future__ import unicode_literals
 import unittest
-import ttp
+import parser as ttp
 
 
 class TWPTests(unittest.TestCase):
@@ -500,7 +500,7 @@ class TWPTests(unittest.TestCase):
         result = self.parser.parse('@username text')
         self.assertEqual(result.html, '<a href="http://localhost:8000/username">@username</a> text')
         self.assertEqual(result.users, ['username'])
-        
+            
     def test_username_trailing(self):
         result = self.parser.parse('text @username')
         self.assertEqual(result.html, 'text <a href="http://localhost:8000/username">@username</a>')
