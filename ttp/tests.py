@@ -501,11 +501,6 @@ class TWPTests(unittest.TestCase):
         self.assertEqual(result.html, '<a href="http://localhost:8000/username">@username</a> text')
         self.assertEqual(result.users, ['username'])
 
-    def test_username_to_long(self):
-        result = self.parser.parse('@username9012345678901')
-        self.assertEqual(result.html, '<a href="http://localhost:8000/username901234567890">@username901234567890</a>1')
-        self.assertEqual(result.users, ['username901234567890'])
-
     def test_username_full_at_sign(self):
         result = self.parser.parse('＠username')
         self.assertEqual(result.html, '<a href="http://localhost:8000/username">＠username</a>')
@@ -543,63 +538,10 @@ class TWPTests(unittest.TestCase):
 
     def test_username_AP(self):
         result = self.parser.parse('testing @username@mstdn.io')
-        self.assertEqual(result.html, 'testing <a href="http://localhost:8000/username">@username@mstdn.io</a>')
+        self.assertEqual(result.html, 'testing <a href="https://mstdn.io/username">@username@mstdn.io</a>')
         self.assertEqual(result.users, ['username@mstdn.io'])
         self.assertEqual(result.reply, None)
-    # List tests ---------------------------------------------------------------
-    # --------------------------------------------------------------------------
-    def test_list_preceeded(self):
-        result = self.parser.parse('text @username/list')
-        self.assertEqual(result.html, 'text <a href="http://localhost:8000/username/list">@username/list</a>')
-        self.assertEqual(result.lists, [('username', 'list')])
-
-    def test_list_beginning(self):
-        result = self.parser.parse('@username/list')
-        self.assertEqual(result.html, '<a href="http://localhost:8000/username/list">@username/list</a>')
-        self.assertEqual(result.lists, [('username', 'list')])
-
-    def test_list_preceeded_punctuation(self):
-        result = self.parser.parse('.@username/list')
-        self.assertEqual(result.html, '.<a href="http://localhost:8000/username/list">@username/list</a>')
-        self.assertEqual(result.lists, [('username', 'list')])
-
-    def test_list_followed_punctuation(self):
-        result = self.parser.parse('@username/list&^$%^')
-        self.assertEqual(result.html, '<a href="http://localhost:8000/username/list">@username/list</a>&^$%^')
-        self.assertEqual(result.lists, [('username', 'list')])
-
-    def test_list_not_slash_space(self):
-        result = self.parser.parse('@username/ list')
-        self.assertEqual(result.html, '<a href="http://localhost:8000/username">@username</a>/ list')
-        self.assertEqual(result.users, ['username'])
-        self.assertEqual(result.lists, [])
-
-    def test_list_beginning2(self):
-        result = self.parser.parse('@username/list')
-        self.assertEqual(result.html, '<a href="http://localhost:8000/username/list">@username/list</a>')
-        self.assertEqual(result.lists, [('username', 'list')])
-
-    def test_list_not_empty_username(self):
-        result = self.parser.parse('text @/list')
-        self.assertEqual(result.html, 'text @/list')
-        self.assertEqual(result.lists, [])
-
-    def test_list_not_preceeded_letter(self):
-        result = self.parser.parse('meet@the/beach')
-        self.assertEqual(result.html, 'meet@the/beach')
-        self.assertEqual(result.lists, [])
-
-    def test_list_long_truncate(self):
-        result = self.parser.parse('@username/list5678901234567890123456789012345678901234567890123456789012345678901234567890A')
-        self.assertEqual(
-            result.html, '<a href="http://localhost:8000/username/list5678901234567890123456789012345678901234567890123456789012345678901234567890">@username/list5678901234567890123456789012345678901234567890123456789012345678901234567890</a>A')
-        self.assertEqual(result.lists, [('username', 'list5678901234567890123456789012345678901234567890123456789012345678901234567890')])
-
-    def test_list_with_dash(self):
-        result = self.parser.parse('text @username/list-foo')
-        self.assertEqual(result.html, 'text <a href="http://localhost:8000/username/list-foo">@username/list-foo</a>')
-        self.assertEqual(result.lists, [('username', 'list-foo')])
-
+   
 
 class TWPTestsWithSpans(unittest.TestCase):
 
