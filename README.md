@@ -1,7 +1,7 @@
-ZinatParser
+Anfora-Parser
 ===================
 
-**ZinatParser** is a python utility to work with AP messages at Zinat. Extract
+**Anfora-Parser** is a python utility to work with AP messages at Zinat. Extract
 users, hashtags, URLs and format as HTML for display.
 
 PyPI release: [https://pypi.python.org/pypi/twitter-text-python/](http://pypi.python.org/pypi/twitter-text-python/)
@@ -17,8 +17,8 @@ usage
 -----
 
 ```python
->>> from ttp import ttp
->>> p = ttp.Parser()
+>>> from anfora_parser import parser
+>>> p = parser.Parser()
 >>> result = p.parse("@burnettedmond, you now support #IvoWertzel's tweet parser! https://github.com/edburnett/")
 >>> result.reply
 'burnettedmond'
@@ -37,7 +37,7 @@ If you need different HTML output just subclass and override the `format_*` meth
 You can also ask for the span tags to be returned for each entity:
 
 ```python
->>> p = ttp.Parser(include_spans=True)
+>>> p = parser.Parser(include_spans=True)
 >>> result = p.parse("@burnettedmond, you now support #IvoWertzel's tweet parser! https://github.com/edburnett/")
 >>> result.urls
 [('https://github.com/burnettedmond/', (57, 87))]
@@ -47,7 +47,7 @@ You can also ask for the span tags to be returned for each entity:
 To use the shortlink follower (depends on the [Requests](http://docs.python-requests.org/) library):
 
 ```python
->>> from ttp import utils
+>>> from anfora_parser import utils
 >>> # assume that result.urls == ['http://t.co/8o0z9BbEMu', u'http://bbc.in/16dClPF']
 >>> print utils.follow_shortlinks(result.urls)  # pass in list of shortlink URLs
 {'http://t.co/8o0z9BbEMu': [u'http://t.co/8o0z9BbEMu', u'http://bbc.in/16dClPF', u'http://www.bbc.co.uk/sport/0/21711199#TWEET650562'], u'http://bbc.in/16dClPF': [u'http://bbc.in/16dClPF', u'http://www.bbc.co.uk/sport/0/21711199#TWEET650562']}
@@ -58,6 +58,7 @@ To use the shortlink follower (depends on the [Requests](http://docs.python-requ
 changelog
 ---------
 
+* 2018/08/24 1.2.0 Change version to >= Python3.6
 * 2015/04/11 1.1.0 Add basic support for Python 3
 * 2014/07/30 1.0.3 Update parsed URLs for Twitter API 1.1 compatibility
 * 2013/06/01 1.0.1 new working version, adding comma parse fix (thanks https://github.com/muckrack), used autopep8 to clean the src, added a shortlink expander
@@ -69,7 +70,7 @@ tests
 
 Run the unit tests:
 
-    $ python ttp/tests.py
+    $ python3.6 anfora_parser/tests.py
     ....................................................................................................
     ----------------------------------------------------------------------
     Ran 100 tests in 0.009s
