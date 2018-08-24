@@ -1,7 +1,7 @@
 Anfora-Parser
 ===================
 
-**Anfora-Parser** is a python utility to work with AP messages at Zinat. Extract
+**Anfora-Parser** is a python utility to work with AP messages at [Anfora](https://github.com/anforaProject). Extract
 users, hashtags, URLs and format as HTML for display.
 
 PyPI release: [https://pypi.python.org/pypi/twitter-text-python/](http://pypi.python.org/pypi/twitter-text-python/)
